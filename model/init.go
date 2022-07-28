@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	logging "github.com/sirupsen/logrus"
 )
 
 var DB *gorm.DB
@@ -28,5 +29,6 @@ func Database(connString string) {
 	db.DB().SetMaxOpenConns(100) //设置打开最大连接
 	db.DB().SetConnMaxLifetime(time.Second * 30)
 	DB = db
+	logging.Info("MySQL Connect Successfully.")
 	migration()
 }
