@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"main.go/api"
+	"main.go/service"
 )
 
 func NewRouter() *gin.Engine {
@@ -18,7 +19,8 @@ func NewRouter() *gin.Engine {
 			ctx.HTML(200, "register.html", nil)
 		})
 		v1.POST("user/register", api.UserRegister)
-		// v1.GET("ws", service.WsHandler)
+		v1.GET("ws", service.WsHandler)
+
 	}
 	return r
 }

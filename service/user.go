@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"main.go/model"
 	"main.go/serializer"
 )
@@ -13,9 +15,10 @@ type UserRegisterService struct {
 func (service *UserRegisterService) Register() serializer.Response {
 	var user model.User
 	count := 0
-	model.DB.Model(&model.User{}).Where("username=?", service.UserName).First(&user).Count(&count)
+	model.DB.Model(&model.User{}).Where("user_name=?", service.UserName).First(&user).Count(&count)
 	if count != 0 {
 		// 已经有人注册
+		fmt.Print(count)
 		return serializer.Response{
 			Status: 400,
 			Msg:    "用户名已注册",
