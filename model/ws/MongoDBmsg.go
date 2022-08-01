@@ -2,7 +2,14 @@ package ws
 
 type MongoDBMsg struct {
 	Content   string `bson:"content"`   // 内容
-	StartTime string `bson:"startTime"` //创建时间
-	EndTime   string `bson:"endTime"`   //过期时间
+	StartTime int64  `bson:"startTime"` //创建时间
+	EndTime   int64  `bson:"endTime"`   //过期时间
 	Read      uint   `bson:"read"`      //已读状态
+}
+
+type Result struct {
+	StartTime int64
+	Msg       string
+	Content   interface{}
+	From      string
 }

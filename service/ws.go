@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	logging "github.com/sirupsen/logrus"
 	"main.go/cache"
+	"main.go/conf"
 	"main.go/pkg/errcode"
 
 	"github.com/gin-gonic/gin"
@@ -143,6 +145,31 @@ func (c *Client) Read() {
 			Manager.Broadcast <- &Broadcast{
 				Client:  c,
 				Massage: []byte(sendMsg.Content),
+			}
+		} else if sendMsg.Type == 2 { // 获取历史消息
+			timeT, err := strconv.Atoi(sendMsg.Content) //string to int
+			if err != nil {
+				timeT = 999999
+			}
+			results, _ := FindMore(conf.MongoDBName, c.SendID, c.ID, int64(timeT), 10) // 获取十条历史消息
+			if len(results) > 10 {
+				results = results[:10]
+			} else if len(results) == 0 {
+				replyMsg := ReplyMsg{
+					Code:    errcode.WebsocketEnd,
+					Content: "无消息",
+				}
+				msg, _ := json.Marshal(replyMsg) // 序列化
+				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+				continue
+			}
+			for _, result := range results {
+				replyMsg := ReplyMsg{
+					From:    result.From,
+					Content: result.Msg,
+				}
+				msg, _ := json.Marshal(replyMsg) // 序列化
+				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
 			}
 
 		}
